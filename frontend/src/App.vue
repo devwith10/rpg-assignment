@@ -1,85 +1,80 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+import { RouterView } from 'vue-router'
+import { useAuth } from '@/composables/useAuth'
+import NotificationToast from '@/components/notifications/NotificationToast.vue'
+import UserAvatar from '@/components/ui/UserAvatar.vue'
+
+const { user, isAuthenticated, logout } = useAuth()
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+  <div class="panel">
+    <header v-if="isAuthenticated" class="nav">
+      <UserAvatar :size="56" :label="user?.email" />
+      <button type="button" class="logout" @click="logout">
+        Log out
+        <svg
+          class="logout-arrow"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M7 17 17 7" />
+          <path d="M9 7h8v8" />
+        </svg>
+      </button>
+    </header>
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+    <main>
+      <RouterView />
+    </main>
+  </div>
 
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header>
-
-  <RouterView />
+  <!-- The v-if is load-bearing: unmount/remount on logout/login is what tears
+       down and recreates the subscription on the NEW WebSocket after resetWs().
+       An always-mounted toast would keep subscribing against the old socket. -->
+  <NotificationToast v-if="isAuthenticated" />
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
+.panel {
+  background: var(--color-panel);
+  border-radius: var(--radius-panel);
+  padding: 2rem 1.75rem 2.25rem;
+  box-shadow: var(--shadow-soft);
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.75rem;
 }
 
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
+.logout {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--color-card);
+  color: var(--color-heading);
+  font-size: 1.0625rem;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(31, 36, 46, 0.08);
 }
 
-nav a.router-link-exact-active {
-  color: var(--color-text);
+.logout:hover {
+  box-shadow: 0 4px 12px rgba(31, 36, 46, 0.16);
 }
 
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
+.logout-arrow {
+  width: 1rem;
+  height: 1rem;
 }
 </style>
