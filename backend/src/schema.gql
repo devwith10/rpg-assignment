@@ -2,10 +2,59 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type HelloWorldModel {
-  value: String!
+"""
+GraphQL-facing representation of a user. Deliberately omits passwordHash.
+"""
+type UserModel {
+  id: Float!
+  email: String!
 }
 
+type AuthPayloadModel {
+  token: String!
+  user: UserModel!
+}
+
+"""GraphQL-facing representation of a post, including its author."""
+type PostModel {
+  id: Float!
+  title: String!
+  body: String!
+  createdAt: DateTime!
+  author: UserModel!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
 type Query {
-  sayHello: HelloWorldModel!
+  me: UserModel!
+  posts: [PostModel!]!
+}
+
+type Mutation {
+  signUp(input: SignUpInput!): AuthPayloadModel!
+  signIn(input: SignInInput!): AuthPayloadModel!
+  createPost(input: CreatePostInput!): PostModel!
+}
+
+input SignUpInput {
+  email: String!
+  password: String!
+}
+
+input SignInInput {
+  email: String!
+  password: String!
+}
+
+input CreatePostInput {
+  title: String!
+  body: String!
+}
+
+type Subscription {
+  postPublished: PostModel!
 }

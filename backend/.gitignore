@@ -3,6 +3,12 @@
 /node_modules
 /build
 
+# SQLite database (dev-only, recreated by synchronize)
+db.sqlite
+db.sqlite-journal
+db.sqlite-wal
+db.sqlite-shm
+
 # Logs
 logs
 *.log
